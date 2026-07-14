@@ -1,0 +1,56 @@
+<!--
+  Reglas custom — Blue Team Detection Lab
+  S02: T1110.001 — Brute Force AD
+  S03: T1558.003 — Kerberoasting
+-->
+
+<group name="brute_force,kerberoasting,active_directory,">
+
+  <!-- S02 — Múltiples fallos Kerberos desde misma IP -->
+  <rule id="100201" level="12" frequency="5" timeframe="30">
+    <if_matched_sid>60122</if_matched_sid>
+    <description>LAB-S02: Posible brute force AD - multiples fallos Kerberos (Event 4771)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+
+  <!-- S02 — Múltiples fallos de logon en DC -->
+  <rule id="100202" level="12" frequency="10" timeframe="60">
+    <if_matched_sid>60204</if_matched_sid>
+    <description>LAB-S02: Posible brute force AD - multiples fallos de logon (Event 4625)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+
+  <!-- S02 — Cuenta de dominio bloqueada -->
+  <rule id="100203" level="14">
+    <if_sid>60407</if_sid>
+    <description>LAB-S02: Cuenta de dominio bloqueada - posible brute force (Event 4740)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+  </rule>
+
+  <!-- S03 — TGS con cifrado RC4 (indicador de Kerberoasting) -->
+  <rule id="100300" level="5">
+    <if_sid>60103</if_sid>
+    <field name="win.system.eventID">^4769$</field>
+    <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+    <description>LAB-S03: TGS Kerberos con cifrado RC4 (0x17) - indicador de Kerberoasting (Event 4769)</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+  </rule>
+
+  <!-- S03 — Múltiples TGS RC4 en tiempo corto -->
+  <rule id="100301" level="14" frequency="2" timeframe="10">
+    <if_matched_sid>100300</if_matched_sid>
+    <description>LAB-S03: POSIBLE KERBEROASTING - multiples TGS con RC4 en menos de 10 segundos</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+  </rule>
+
+</group>
